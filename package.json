@@ -10,7 +10,6 @@
 		"@shoutem/ui": "^0.19.6",
 		"react": "16.0.0-alpha.6",
 		"react-native": "0.43.3",
-		"react-native-display": "^1.0.8",
 		"react-native-ios-status-bar-padding": "^1.1.0",
 		"react-native-swipeout": "^2.2.2"
 	},
