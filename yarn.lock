@@ -3120,6 +3120,18 @@ react-devtools-core@^2.0.8:
     shell-quote "^1.6.1"
     ws "^2.0.3"
 
+react-native-animatable@^1.1.0:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.2.3.tgz#d0f0bd694833b934f3aaa1275739228b786ecb4b"
+  dependencies:
+    prop-types "^15.5.10"
+
+react-native-display@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-display/-/react-native-display-1.0.8.tgz#e212d58faaafa75bd8a057d1e97381821c9bdafc"
+  dependencies:
+    react-native-animatable "^1.1.0"
+
 react-native-gesture-responder@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-responder/-/react-native-gesture-responder-0.1.1.tgz#802552d8eb7153c0d81a396e98f4b80b404b6798"

@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import StatusBarPaddingIOS from 'react-native-ios-status-bar-padding';
 import Swipeout from 'react-native-swipeout';
+import Display from 'react-native-display';
 import {
     Screen,
     View,
@@ -18,7 +19,7 @@ import {
     TextInput,
 } from '@shoutem/ui';
 
-const DEFAULT_QUERY = 'react';
+const DEFAULT_QUERY = '';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_FRONTPAGE = 'https://hn.algolia.com/api/v1/search?tags=front_page'
 const PATH_SEARCH = '/search';
@@ -36,35 +37,37 @@ export default class App extends Component {
             searchKey: '',
             searchTerm: DEFAULT_QUERY,
             isLoading: false,
+            isShowSearchBar: false,
         }
         this.renderRow = this.renderRow.bind(this)
         this.dismissItem = this.dismissItem.bind(this)
         this.setSearchTopstories = this.setSearchTopstories.bind(this)
-        this.fetchSearchTopstories =this.fetchSearchTopstories.bind(this)
+        this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this)
         this.onTextChange = this.onTextChange.bind(this)
         this.needToFetchFromServer = this.needToFetchFromServer.bind(this)
         this.onSearchSubmit = this.onSearchSubmit.bind(this)
+        this.onScroll = this.onScroll.bind(this)
     }
 
     setSearchTopstories(result) {
         const { hits, page } = result;
         this.setState(prevState => {
-        const { searchKey, results } = prevState;
-        const oldHits = results && results[searchKey]
-            ? results[searchKey].hits
-            : []
-        const updateHits = [
-            ...oldHits,
-            ...hits
-        ]
-        
-        return {    
-            results: {
-                ...results,
-                [searchKey]: { hits: updateHits, page }
-            },
-            isLoading: false
-        }
+            const { searchKey, results } = prevState;
+            const oldHits = results && results[searchKey]
+                ? results[searchKey].hits
+                : []
+            const updateHits = [
+                ...oldHits,
+                ...hits
+            ]
+
+            return {
+                results: {
+                    ...results,
+                    [searchKey]: { hits: updateHits, page }
+                },
+                isLoading: false
+            }
         });
     }
 
@@ -73,7 +76,7 @@ export default class App extends Component {
         this.setState({
             isLoading: true
         })
-        const url = searchTerm === '' ? 
+        const url = searchTerm === '' ?
             `${PATH_FRONTPAGE}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}` :
             `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`
         fetch(url)
@@ -123,6 +126,13 @@ export default class App extends Component {
         this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE)
     }
 
+    onScroll(event) {
+        currentOffset = event.nativeEvent.contentOffset.y;
+        this.setState({
+            isShowSearchBar: currentOffset === 0 ? true : false
+        })
+    }
+
     renderRow(item) {
         const swipeBtns = [{
             text: 'Delete',
@@ -158,19 +168,25 @@ export default class App extends Component {
     }
 
     render() {
-        const { results, searchTerm, searchKey, isLoading } = this.state;
+        const { results, searchTerm, searchKey, isLoading, isShowSearchBar } = this.state;
         const page = (results && results[searchKey] && results[searchKey].page) || 0
         const list = (results && results[searchKey] && results[searchKey].hits) || []
         return (
             <View>
                 <StatusBarPaddingIOS />
-                <TextInput
-                    placeholder={'Search...'}
-                    returnKeyType={'search'}
-                    onChangeText={this.onTextChange}
-                    onSubmitEditing={this.onSearchSubmit}>
-                </TextInput>
+                <Display enable={isShowSearchBar}
+                        enter={'fadeIn'}
+                        exit={'fadeOut'}
+                        defaultDuration={500}>
+                    <TextInput
+                        placeholder={'Search...'}
+                        returnKeyType={'search'}
+                        onChangeText={this.onTextChange}
+                        onSubmitEditing={this.onSearchSubmit}>
+                    </TextInput>
+                </Display>
                 <ListView
+                    onScroll={this.onScroll}
                     loading={isLoading}
                     data={list}
                     renderRow={this.renderRow}
